@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: library_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - library_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library_user -d library_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: library_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # These match the ${DB_URL:...} / ${DB_USER:...} / ${DB_PASSWORD:...}
+      # placeholders in backend/src/main/resources/application.properties.
+      # "postgres" below is the service name above, resolved via Docker's
+      # internal network - not localhost, since this runs in its own container.
+      DB_URL: jdbc:postgresql://postgres:5432/library_db
+      DB_USER: library_user
+      DB_PASSWORD: library_pass
+    ports:
+      - "8080:8080"
+
+volumes:
+  library_pg_data:

@@ -1,0 +1,33 @@
+# Backend (Quarkus / Maven)
+target/
+*.log
+*.tmp
+*.swp
+*.class
+
+# Frontend (Next.js / Node)
+node_modules/
+.next/
+out/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment & config
+.env
+.env.local
+.env.development
+.env.production
+
+# Build artifacts
+*.jar
+*.war
+*.zip
+*.tar.gz
